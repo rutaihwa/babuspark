@@ -23,6 +23,7 @@ services:
        condition: on-failure
     volumes:
     - $PWD/work:/home/$USER/work
+    - $PWD/scripts:/home/$USER/scripts
     logging:       
       driver: "json-file"
       options:     
