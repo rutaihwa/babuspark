@@ -1,0 +1,67 @@
+# Inspired by work of @Gary Stafford
+version: "3.7"
+services:
+  pyspark:
+    image: jupyter/all-spark-notebook:latest
+    ports:
+    - "${PY_PORT_ONE}:8888/tcp"
+    - "${PY_PORT_TWO}:4040/tcp"
+    networks:
+    - pyspark-network
+    working_dir: /home/$USER/work
+    environment:
+      CHOWN_HOME: "yes"
+      GRANT_SUDO: "yes"
+      NB_UID: 1000
+      NB_GID: 100
+      NB_USER: $USER
+      NB_GROUP: staff
+    user: root
+    deploy:
+     replicas: 1
+     restart_policy:
+       condition: on-failure
+    volumes:
+    - $PWD/work:/home/$USER/work
+    logging:       
+      driver: "json-file"
+      options:     
+        max-size: "50m"
+        max-file: "10"
+  postgres:
+    image: postgres:11.3
+    environment:
+      - "POSTGRES_USERNAME: ${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD: ${POSTGRES_PASS}"
+      - "POSTGRES_DB: ${POSTGRES_DB}"
+    ports:
+    - "${POSTGRES_PORT}:5432/tcp"
+    networks:
+    - pyspark-network
+    volumes:
+    - $PWD/volumes/postgres:/var/lib/postgresql/data
+    deploy:
+     restart_policy:
+       condition: on-failure
+    logging:       
+      driver: "json-file"
+      options:     
+        max-size: "50m"
+        max-file: "10"    
+  adminer:
+    image: adminer:latest
+    ports:
+    - "${ADMINER_PORT}:8080/tcp"
+    networks:
+    - pyspark-network
+    deploy:
+     restart_policy:
+       condition: on-failure
+    logging:       
+      driver: "json-file"
+      options:     
+        max-size: "50m"
+        max-file: "10"
+
+networks:
+  pyspark-network:
