@@ -2,6 +2,8 @@
 version: "3.7"
 services:
   pyspark:
+    env_file:
+      - .env
     image: jupyter/all-spark-notebook:latest
     ports:
     - "${PY_PORT_ONE}:8888/tcp"
@@ -30,19 +32,21 @@ services:
         max-size: "50m"
         max-file: "10"
   postgres:
+    env_file:
+      - .env
     image: postgres:11.3
     environment:
-      - "POSTGRES_USERNAME: ${POSTGRES_USER}"
-      - "POSTGRES_PASSWORD: ${POSTGRES_PASS}"
-      - "POSTGRES_DB: ${POSTGRES_DB}"
+      - "POSTGRES_USERNAME: ${PG_USER}"
+      - "POSTGRES_PASSWORD: ${PG_PASS}"
+      - "POSTGRES_DB: ${PG_DB}"
     ports:
-    - "${POSTGRES_PORT}:5432/tcp"
+    - "${PG_PORT}:5432/tcp"
     networks:
     - pyspark-network
     volumes:
     - $PWD/volumes/postgres:/var/lib/postgresql/data
     deploy:
-     restart_policy:
+      restart_policy:
        condition: on-failure
     logging:       
       driver: "json-file"
@@ -50,6 +54,8 @@ services:
         max-size: "50m"
         max-file: "10"    
   adminer:
+    env_file:
+      - .env
     image: adminer:latest
     ports:
     - "${ADMINER_PORT}:8080/tcp"
