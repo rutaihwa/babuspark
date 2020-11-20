@@ -2,12 +2,10 @@
 version: "3.7"
 services:
   pyspark:
-    env_file:
-      - .env
     image: jupyter/all-spark-notebook:latest
     ports:
-    - "${PY_PORT_ONE}:8888/tcp"
-    - "${PY_PORT_TWO}:4040/tcp"
+    - "18888:8888/tcp"
+    - "14040:4040/tcp"
     networks:
     - pyspark-network
     working_dir: /home/$USER/work
@@ -34,13 +32,13 @@ services:
   postgres:
     env_file:
       - .env
-    image: postgres:11.3
+    image: postgres:13.1-alpine
     environment:
-      - "POSTGRES_USERNAME: ${PG_USER}"
-      - "POSTGRES_PASSWORD: ${PG_PASS}"
-      - "POSTGRES_DB: ${PG_DB}"
+      - "POSTGRES_USERNAME: babu"
+      - "POSTGRES_PASSWORD: babupawd"
+      - "POSTGRES_DB: babudb"
     ports:
-    - "${PG_PORT}:5432/tcp"
+    - "15432:5432/tcp"
     networks:
     - pyspark-network
     volumes:
@@ -54,11 +52,9 @@ services:
         max-size: "50m"
         max-file: "10"    
   adminer:
-    env_file:
-      - .env
     image: adminer:latest
     ports:
-    - "${ADMINER_PORT}:8080/tcp"
+    - "18080:8080/tcp"
     networks:
     - pyspark-network
     deploy:
